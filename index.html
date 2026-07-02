@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caffeine & Co. | Premium Specialty Coffee</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- DESIGN SYSTEM & VARIABLES --- */
+        :root {
+            --color-cream: #FDFBF7;
+            --color-espresso: #231F20;
+            --color-espresso-light: #3D3536;
+            --color-olive: #606C38;
+            --color-olive-light: #283618;
+            --color-tan: #DDA15E;
+            
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* --- RESET & BASE STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: var(--color-cream);
+            color: var(--color-espresso);
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Hide default cursor on desktop */
+        @media (pointer: fine) {
+            body, a, button, select, input {
+                cursor: none !important;
+            }
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        .custom-cursor-dot,
+        .custom-cursor-ring {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            display: none; /* Hidden by default, shown via JS if desktop */
+        }
+
+        .custom-cursor-dot {
+            background-color: var(--color-cream);
+        }
+
+        .custom-cursor-ring {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--color-cream);
+            transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Cursor Hover States triggered via JS */
+        .custom-cursor-ring.hovered {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(253, 251, 247, 0.1);
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            background-color: rgba(253, 251, 247, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(35, 31, 32, 0.05);
+            transition: var(--transition-smooth);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 90px;
+        }
+
+        .brand {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            opacity: 0.8;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background-color: var(--color-espresso);
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .btn-cta {
+            background-color: var(--color-espresso);
+            color: var(--color-cream);
+            padding: 0.8rem 1.8rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--color-espresso);
+            border-radius: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-cta:hover {
+            background-color: transparent;
+            color: var(--color-espresso);
+        }
+
+        /* Mobile Nav Toggle */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+            border: none;
+        }
+
+        .nav-toggle span {
+            width: 24px;
+            height: 2px;
+            background-color: var(--color-espresso);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            background-color: var(--color-espresso);
+            color: var(--color-cream);
+            overflow: hidden;
+            padding-top: 90px;
+        }
+
+        /* Placeholder background image with elegant dark overlay */
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(35, 31, 32, 0.6), rgba(35, 31, 32, 0.7)), 
+                              url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+            transform: scale(1.05);
+            animation: subtleZoom 20s infinite alternate ease-in-out;
+            z-index: 1;
+        }
+
+        @keyframes subtleZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.08); }
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-content {
+            max-width: 650px;
+        }
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: 4.5rem;
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            max-width: 500px;
+        }
+
+        .btn-primary {
+            background-color: var(--color-cream);
+            color: var(--color-espresso);
+            padding: 1rem 2.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--color-cream);
+            transition: var(--transition-smooth);
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: var(--color-cream);
+        }
+
+        /* --- FEATURES / PHILOSOPHY SECTION --- */
+        .philosophy {
+            padding: 8rem 0;
+            background-color: var(--color-cream);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-header span {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--color-olive);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-serif);
+            font-size: 2.8rem;
+            font-weight: 500;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 3rem 2rem;
+            background-color: transparent;
+            border: 1px solid rgba(35, 31, 32, 0.05);
+            transition: var(--transition-smooth);
+        }
+
+        .feature-card:hover {
+            background-color: #ffffff;
+            border-color: rgba(35, 31, 32, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.02);
+        }
+
+        .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(96, 108, 56, 0.08);
+            border-radius: 50%;
+            color: var(--color-olive);
+        }
+
+        /* Inline Clean SVG Icon sizing */
+        .icon-wrapper svg {
+            width: 32px;
+            height: 32px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.5;
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--color-espresso-light);
+            opacity: 0.8;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--color-espresso);
+            color: var(--color-cream);
+            padding: 5rem 0 2rem;
+            border-top: 1px solid rgba(253, 251, 247, 0.05);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(2, 1fr);
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-brand h4 {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-brand p {
+            opacity: 0.7;
+            max-width: 320px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .footer-heading {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            color: var(--color-tan);
+            font-weight: 600;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            opacity: 0.7;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+            padding-left: 5px;
+        }
+
+        .hours-list li {
+            opacity: 0.7;
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid rgba(253, 251, 247, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            opacity: 0.5;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .social-icons a {
+            transition: var(--transition-smooth);
+        }
+
+        .social-icons a:hover {
+            color: var(--color-tan);
+            transform: translateY(-2px);
+        }
+
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links, .nav-container .btn-cta {
+                display: none; /* Simplification for mobile view demo */
+            }
+            .nav-toggle {
+                display: flex;
+            }
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="custom-cursor-dot" id="cursor-dot"></div>
+    <div class="custom-cursor-ring" id="cursor-ring"></div>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="brand hover-target">Caffeine & Co.</a>
+            <ul class="nav-links">
+                <li><a href="#" class="hover-target">Home</a></li>
+                <li><a href="#" class="hover-target">Menu</a></li>
+                <li><a href="#" class="hover-target">About</a></li>
+                <li><a href="#" class="hover-target">Contact</a></li>
+            </ul>
+            <a href="#" class="btn-cta hover-target">Order Now</a>
+            <button class="nav-toggle" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-bg"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1>Crafted Coffee, Curated Moments</h1>
+                <p>Step away from the rush. Immerse yourself in a premium sensory escape designed for true coffee connoisseurs.</p>
+                <a href="#philosophy" class="btn-primary hover-target">Explore Our Brews</a>
+            </div>
+        </div>
+    </header>
+
+    <section id="philosophy" class="philosophy">
+        <div class="container">
+            <div class="section-header">
+                <span>Our Philosophy</span>
+                <h2>Behind Every Perfect Pour</h2>
+            </div>
+            
+            <div class="grid-3">
+                <div class="feature-card hover-target">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24"><path d="M12 22C12 22 20 18 20 12C20 7 17 4 12 2C7 4 4 7 4 12C4 18 12 22 12 22Z"/><path d="M12 2V22"/></svg>
+                    </div>
+                    <h3>Ethically Sourced</h3>
+                    <p>We partner directly with transparent, multi-generational farms ensuring fair wages and completely sustainable agricultural practices.</p>
+                </div>
+
+                <div class="feature-card hover-target">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C12 2 19 7.5 19 12.5C19 16.366 15.866 19.5 12 19.5C8.13401 19.5 5 16.366 5 12.5C5 7.5 12 2 12 2Z"/><path d="M12 7C12 7 15 10.5 15 13.5C15 15.5 13.5 16.5 12 16.5C10.5 16.5 9 15.5 9 13.5C9 10.5 12 7 12 7Z"/></svg>
+                    </div>
+                    <h3>Artisan Roasted</h3>
+                    <p>Our micro-batches are precision-roasted weekly by master roasters to profile and amplify the distinct regional notes of the bean.</p>
+                </div>
+
+                <div class="feature-card hover-target">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </div>
+                    <h3>Community First</h3>
+                    <p>More than just a café—we design warm, inspiring architectural spaces curated to spark local creativity and slow dialogue.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h4>Caffeine & Co.</h4>
+                    <p>Crafting high-end micro-lot coffee experiences for the mindful individual.</p>
+                </div>
+                <div>
+                    <h5 class="footer-heading">Explore</h5>
+                    <ul class="footer-links">
+                        <li><a href="#" class="hover-target">Our Story</a></li>
+                        <li><a href="#" class="hover-target">The Menu</a></li>
+                        <li><a href="#" class="hover-target">Wholesale</a></li>
+                        <li><a href="#" class="hover-target">Journal</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="footer-heading">Hours</h5>
+                    <ul class="hours-list">
+                        <li><span>Mon - Fri</span> <span>7:00 AM - 6:00 PM</span></li>
+                        <li><span>Sat - Sun</span> <span>8:00 AM - 7:00 PM</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Caffeine & Co. All rights reserved.</p>
+                <div class="social-icons">
+                    <a href="#" class="hover-target" aria-label="Instagram">Instagram</a>
+                    <a href="#" class="hover-target" aria-label="Twitter">Twitter</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+        const hoverTargets = document.querySelectorAll('.hover-target');
+
+        // Linear interpolation function to smooth out lagging mechanics
+        const lerp = (start, end, amount) => (1 - amount) * start + amount * end;
+
+        // Mouse position data tracking
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        let dotX = 0;
+        let dotY = 0;
+        
+        let ringX = 0;
+        let ringY = 0;
+
+        // Check if device is a desktop environment (using mouse)
+        const isDesktop = window.matchMedia('(pointer: fine)').matches;
+
+        if (isDesktop) {
+            // Unhide elements if it's a desktop
+            dot.style.display = 'block';
+            ring.style.display = 'block';
+
+            // Capture true mouse movements
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            // Smooth animation loop via requestAnimationFrame
+            const renderCursor = () => {
+                // The dot updates almost instantly
+                dotX = lerp(dotX, mouseX, 0.3);
+                dotY = lerp(dotY, mouseY, 0.3);
+                
+                // The outer ring has a heavier lag (lower speed amount)
+                ringX = lerp(ringX, mouseX, 0.12);
+                ringY = lerp(ringY, mouseY, 0.12);
+
+                dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%)`;
+                ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+
+                requestAnimationFrame(renderCursor);
+            };
+            
+            // Start the cursor animation loop
+            requestAnimationFrame(renderCursor);
+
+            // Add classes for interactions on elements designated with .hover-target
+            hoverTargets.forEach(target => {
+                target.addEventListener('mouseenter', () => {
+                    ring.classList.add('hovered');
+                });
+                target.addEventListener('mouseleave', () => {
+                    ring.classList.remove('hovered');
+                });
+            });
+            
+            // Temporary hide cursor when mouse leaves the viewpoint window entirely
+            document.addEventListener('mouseleave', () => {
+                dot.style.opacity = '0';
+                ring.style.opacity = '0';
+            });
+            document.addEventListener('mouseenter', () => {
+                dot.style.opacity = '1';
+                ring.style.opacity = '1';
+            });
+        }
+    </script>
+</body>
+</html>
